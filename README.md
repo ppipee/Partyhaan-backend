@@ -1,0 +1,3 @@
+# Partyhann Backend
+
+Partyhann server

@@ -1,0 +1,25 @@
+{
+	"presets": [
+		[
+			"@babel/preset-env",
+			{
+				"targets": {
+					"node": 12
+				}
+			}
+		],
+		"@babel/preset-typescript"
+	],
+	"sourceType": "unambiguous",
+	"plugins": [
+		"@babel/plugin-proposal-export-default-from",
+		"babel-plugin-lodash",
+		"@babel/plugin-transform-runtime",
+		[
+			"module-resolver",
+			{
+				"root": ["./src"]
+			}
+		]
+	]
+}
