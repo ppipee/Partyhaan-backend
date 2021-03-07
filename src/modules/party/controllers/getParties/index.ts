@@ -23,15 +23,13 @@ const getParties = async (req: Request, res: Response) => {
 
 	const totalEntities = await PartyModel.estimatedDocumentCount().exec()
 	const totalPages = Math.ceil(totalEntities / size)
-	const hasNextPage = totalEntities - size * (page + 1) > 0
-
-	console.log(hasNextPage, totalEntities, size, page)
+	const isLastPage = totalEntities - size * page > 0
 
 	if (size <= 0 || page <= 0 || page > totalPages) {
 		return res.status(400).send({ message: 'query is invalid' })
 	}
 
-	const nextPage = hasNextPage ? page + 1 : page
+	const nextPage = isLastPage ? page + 1 : page
 	const skip = size * (page - 1)
 
 	const [error, partyPlains] = await to(Promise.resolve(PartyModel.find().skip(skip).limit(size).lean()))

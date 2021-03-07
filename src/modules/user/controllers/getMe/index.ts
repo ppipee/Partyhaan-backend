@@ -5,7 +5,6 @@ import getUserData from 'modules/user/utils/getUserData'
 
 const getMe = async (req: Request, res: Response) => {
 	passport.authenticate('jwt', { session: false }, (err, databaseUser, info) => {
-		console.log(databaseUser)
 		if (err) return res.send({ message: err })
 
 		if (databaseUser) {

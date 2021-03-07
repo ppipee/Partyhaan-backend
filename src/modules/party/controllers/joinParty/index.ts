@@ -14,10 +14,7 @@ const joinParty = async (req: Request, res: Response) => {
 		return res.status(400).send({ message: 'required partyId' })
 	}
 
-	const [getError, prevPartyPlain] = await to(
-		Promise.resolve(PartyModel.findById(partyId, {}, { returnOriginal: false }).lean()),
-	)
-
+	const [getError, prevPartyPlain] = await to(Promise.resolve(PartyModel.findById(partyId).lean()))
 	if (!prevPartyPlain) {
 		return res.status(404).send({ message: 'not found party' })
 	}
@@ -32,17 +29,20 @@ const joinParty = async (req: Request, res: Response) => {
 		return res.status(400).send({ message: 'can not join party' })
 	}
 
-	if (prevPartyPlain.totalMembers === prevPartyPlain.maxMembers) {
+	if (prevPartyPlain.totalMembers >= prevPartyPlain.maxMembers) {
 		return res.status(400).send({ message: 'party have full members' })
 	}
 
 	const [updateError, partyPlain] = await to(
 		Promise.resolve(
-			PartyModel.findByIdAndUpdate(partyId, {
-				$inc: { totalMembers: 1 },
-				$max: { totalMembers: prevPartyPlain.maxMembers },
-				$push: { members: String(user._id) },
-			}),
+			PartyModel.findByIdAndUpdate(
+				partyId,
+				{
+					$inc: { totalMembers: 1 },
+					$push: { members: String(user._id) },
+				},
+				{ returnOriginal: false },
+			).lean(),
 		),
 	)
 
@@ -50,7 +50,7 @@ const joinParty = async (req: Request, res: Response) => {
 		return res.status(500).send({ message: updateError })
 	}
 
-	const party = getPartyData(partyPlain, user)
+	const party = getPartyData(partyPlain as PartyDoc, user)
 
 	return res.send(party)
 }
